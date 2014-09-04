@@ -1,0 +1,26 @@
+{
+    "name": "DropDown",
+    "studioName": "DropDown",
+    "category": "Custom Widgets",
+    "iconPath": "/icons/widget.png",
+    "author": "Widget Developer",
+    "contributors": [
+        "Developer 1",
+        "Developer 2"
+    ],
+    "version": "1.0.0",
+    "copyright": "(c) 2014 Widget Developer",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/developer/Widget.git"
+    },
+    "keywords": ["wakanda", "widget"],
+    "engines": {"wakanda": ">= 8"},
+    "license": "MIT",
+    "loadDependencies": [
+        {"id": "Widget_V2"},
+        {"id": "DropDown/widget.js", "version": "1.0.0", "path": "WIDGETS_CUSTOM"},
+        {"id": "DropDown/css/widget.css", "version": "1.0.0", "path": "WIDGETS_CUSTOM"},
+        {"id": "DropDown/designer.js", "studioOnly": true, "version": "1.0.0", "path": "WIDGETS_CUSTOM"}
+    ]
+}
