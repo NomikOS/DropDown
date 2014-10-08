@@ -15,7 +15,10 @@
 
         this.selectItem.onChange(function() {
             if(this.selectItem()) {
-                this.value.oldBinding = this.value.boundDatasource().toString();
+                this.value.oldBinding = this.value.boundDatasource();
+                if(this.value.oldBinding) {
+                    this.value.oldBinding = this.value.oldBinding.toString();
+                }
                 this.value.bindDatasource('');
             } else {
                 this.value.bindDatasource(this.value.oldBinding);

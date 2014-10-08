@@ -18,11 +18,12 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
         allowEmpty: widget.property({ type: 'boolean', bindable: false }),
         render: function(elements) {
             var s = '';
+            var position = this.items().getPosition();
             if(this.allowEmpty()) {
                 s += '<option></option>';
             }
-            s += elements.map(function(i) {
-                return '<option value="' + i.value + '">' + i.label + '</option>';
+            s += elements.map(function(i, index) {
+                return '<option value="' + i.value + '"' + (position === index ? ' selected' : '') + '>' + i.label + '</option>';
             }).join('');
             this.node.innerHTML = s;
             this._valueChangeHandler();
@@ -93,7 +94,9 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
 
             if(this.selectItem()) {
                 this._selectSubscriber = this.items.subscribe('currentElementChange', function() {
-                    this.value(this.items().getKey());
+                    var position = this.items().getPosition();
+                    this.node.selectedIndex = position + (this.allowEmpty() ? 1 : 0);
+                    this._setValueByPosition(position);
                 }, this);
             }
         },
@@ -131,9 +134,9 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
         getSelectedIndex: function() {
             var position = this.node.selectedIndex;
             if(this.allowEmpty()) {
-                return -1;
+                return position - 1;
             }
-            return position - 1;
+            return position;
         }
     });
 
