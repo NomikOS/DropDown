@@ -53,10 +53,17 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
 
             // force value attribute to the key
             if(this.selectItem() || dataClass) {
+                if(this.items()) {
+                    dataClass = this.items().getDataClass();
+                }
                 var map = this.items.mapping();
-                for(var k in dataClass) {
-                    if(dataClass[k].identifying) {
-                        map.value = k;
+                if(dataClass instanceof WAF.DataClass) {
+                    map.value = dataClass._private.primaryKey;
+                } else {
+                    for(var k in dataClass) {
+                        if(dataClass[k].isKey) {
+                            map.value = k;
+                        }
                     }
                 }
                 this.items.mapping(map);
