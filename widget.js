@@ -75,7 +75,7 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
             // FIXME: destroy the created datasource
         },
         init: function() {
-            var subscriber = this.value.onChange(this._valueChangeHandler);
+            this._subscriber = this.value.onChange(this._valueChangeHandler);
             this._initBinding();
             this.subscribe('datasourceBindingChange', 'value', this._initBinding, this);
 
@@ -87,41 +87,53 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
             });
 
             $(this.node).on('change', function() {
-                var position = this.node.selectedIndex;
-                if(this.allowEmpty()) {
-                    if(!position) {
-                        this.value(null);
-                        return;
-                    }
-                    position--;
-                }
-                subscriber.pause();
-                // FIXME: to simplify when setAttributeValue accept KEY for relatedEntity
-                if(this._getRelatedDataClass()) {
-                    this.items().getEntityCollection().getEntity(position, function(event) {
-                        var bound = this.value.boundDatasource();
-                        bound.datasource[bound.attribute].set(event.entity);
-                    }.bind(this));
-                } else {
-                    var options = $('option', this.node);
-                    this.value(options.get(this.node.selectedIndex).value);
-                }
-                subscriber.resume();
-
-                if(this.selectItem()) {
-                    selectSubscriber.pause();
-                    this.items().selectByKey(this.value());
-                    selectSubscriber.resume();
-                    return;
-                }
-
+                var position = this.getSelectedIndex();
+                this._setValueByPosition(position);
             }.bind(this));
 
             if(this.selectItem()) {
-                var selectSubscriber = this.items.subscribe('currentElementChange', function() {
+                this._selectSubscriber = this.items.subscribe('currentElementChange', function() {
                     this.value(this.items().getKey());
                 }, this);
             }
+        },
+        _setValueByPosition: function(position) {
+            this._subscriber.pause();
+            // FIXME: to simplify when setAttributeValue accept KEY for relatedEntity
+            if(this._getRelatedDataClass()) {
+                var bound = this.value.boundDatasource();
+                if(position < 0) {
+                    this.value(null);
+                    bound.datasource[bound.attribute].set(null);
+                } else {
+                    this.items().getEntityCollection().getEntity(position, function(event) {
+                        bound.datasource[bound.attribute].set(event.entity);
+                    }.bind(this));
+                }
+            } else {
+                if(position < 0) {
+                    this.value(null);
+                } else {
+                    this.items().getElement(position, function(event) {
+                        var element = this.items.mapElement(event.element);
+                        this.value(element.value);
+                    }.bind(this));
+                }
+            }
+            this._subscriber.resume();
+
+            if(this.selectItem()) {
+                this._selectSubscriber.pause();
+                this.items().select(position);
+                this._selectSubscriber.resume();
+            }
+        },
+        getSelectedIndex: function() {
+            var position = this.node.selectedIndex;
+            if(this.allowEmpty()) {
+                return -1;
+            }
+            return position - 1;
         }
     });
 
