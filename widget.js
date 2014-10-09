@@ -17,6 +17,10 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
         limit: widget.property({ type: 'integer', defaultValue: 40, bindable: false }),
         allowEmpty: widget.property({ type: 'boolean', bindable: false }),
         render: function(elements) {
+            if(!this.items()) {
+                this.node.innerHTML = '';
+                return;
+            }
             var s = '';
             var position = this.items().getPosition();
             if(this.allowEmpty()) {
