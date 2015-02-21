@@ -98,7 +98,8 @@ WAF.define('DropDown', ['waf-core/widget'], function(widget) {
                 this.items.fetch({ pageSize: this.limit() });
             });
 
-            $(this.node).on('change', function() {
+            $(this.node).on('change', function(event, wakEvent) {
+            	if(wakEvent) { return; }
                 var position = this.getSelectedIndex();
                 this._setValueByPosition(position);
             }.bind(this));
